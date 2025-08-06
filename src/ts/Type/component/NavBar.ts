@@ -1,13 +1,38 @@
 import type { MenuProps } from "antd";
 
-type MenuItem = Required<MenuProps>["items"][number];
+export type MenuItem = Required<MenuProps>["items"][number];
 
-export const option: { active_key: string; items: MenuItem[] } = {
-  active_key: "",
+export const options: { items: MenuItem[] } = {
   items: [
     {
       label: "发现音乐",
       key: "home",
+      children: [
+        {
+          label: "推荐",
+          key: "recommend",
+        },
+        {
+          label: "排行榜",
+          key: "toplist",
+        },
+        {
+          label: "歌单",
+          key: "playlist",
+        },
+        {
+          label: "播客",
+          key: "djradio",
+        },
+        {
+          label: "歌手",
+          key: "artist",
+        },
+        {
+          label: "新碟上架",
+          key: "album",
+        },
+      ]
     },
     {
       label: "我的音乐",

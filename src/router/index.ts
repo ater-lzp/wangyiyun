@@ -1,5 +1,6 @@
 import { lazy } from "react";
-import { createHashRouter } from "react-router";
+import { createHashRouter, redirect } from "react-router";
+
 const router = createHashRouter([
   {
     path: "/",
@@ -7,8 +8,16 @@ const router = createHashRouter([
     children: [
       {
         index: true,
+        loader: () => redirect("/home")  // 使用索引路由重定向
+      },
+      {
+        path: 'home',
         Component: lazy(() => import("../view/home/index")),
-        children:[
+        children: [
+          {
+            index: true,
+            loader: () => redirect("/home/recommend")
+          },
           {
             path: "recommend",
             Component: lazy(() => import("../view/home/view/recommend")),
@@ -35,8 +44,33 @@ const router = createHashRouter([
           },
         ]
       },
-      
+      // ... 其他路由保持不变
+      {
+        path: "my_music",
+        Component: lazy(() => import("../view/my_music/index"))
+      },
+      {
+        path: "subscribe",
+        Component: lazy(() => import("../view/subscribe/index"))
+      },
+      {
+        path: "shop",
+        Component: lazy(() => import("../view/shop/index"))
+      },
+      {
+        path: "singer",
+        Component: lazy(() => import("../view/singer/index"))
+      },
+      {
+        path: "music_recommend",
+        Component: lazy(() => import("../view/music_recommend/index"))
+      },
+      {
+        path: "download",
+        Component: lazy(() => import("../view/download/index"))
+      },
     ],
   },
 ]);
+
 export default router;

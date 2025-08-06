@@ -1,10 +1,11 @@
-import React from "react";
+import { useRef, useMemo } from "react";
 import { Layout, ConfigProvider, Menu, Button } from "antd";
-import type { MenuProps } from "antd";
 import Search from "./Search";
-type MenuItem = Required<MenuProps>["items"][number];
 import { useNavigate, useLocation } from "react-router";
+import type { MenuItem } from "../ts/Type/component/NavBar";
+
 const { Header } = Layout;
+
 const theme = {
   components: {
     Menu: {
@@ -53,19 +54,41 @@ const theme2 = {
     },
   },
 };
-export default function NavBar({
-  options,
-}: {
-  options: { items: MenuItem[]; active_key: string }[];
-}) {
+
+export default function NavBar(
+  {
+    options
+  }: { options: { items: MenuItem[] } }
+) {
+  const first = useRef("home")
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 使用 useMemo 优化路径计算
+  const { firstActive, secondActive } = useMemo(() => {
+    const paths = location.pathname.split('/').filter(Boolean);
+    const firstPath = paths[0] || '';
+    const secondPath = paths[1] || '';
+
+    return {
+      firstActive: firstPath ? [firstPath] : [],
+      secondActive: secondPath ? [secondPath] : []
+    };
+  }, [location.pathname]);
+
+  const current_item = useMemo(() =>
+    options.items.find(item => item?.key === firstActive[0]) as MenuItem & { children: MenuItem[] }
+    , [options.items, firstActive])
+
   const handleSelect = (e: { key: string }) => {
+    first.current = e.key;
     navigate(`/${e.key}`);
   };
+
   const handleSelect2 = (e: { key: string }) => {
-    navigate(`${location.pathname}/${e.key}`);
+    navigate(`/${first.current}/${e.key}`);
   };
+
   return (
     <>
       <ConfigProvider theme={theme}>
@@ -78,10 +101,13 @@ export default function NavBar({
             />
             <Menu
               mode="horizontal"
-              items={options[0].items}
+              items={options.items.map((item: MenuItem) => {
+                const { children, ...item2 } = item as MenuItem & { children: MenuItem[] };
+                return item2 as MenuItem;
+              })}
               className="bg-#242424"
               onSelect={handleSelect}
-              defaultSelectedKeys={[options[0].active_key]}
+              selectedKeys={firstActive}
             />
             <Search className="w-180px m-10px" />
             <Button ghost className="rounded-2xl">
@@ -93,15 +119,15 @@ export default function NavBar({
           </div>
         </Header>
       </ConfigProvider>
-      {options[1] && (
+      {current_item?.children && (
         <ConfigProvider theme={theme2}>
           <Header className="bg-#C20C0C  p-inline-48 h-40px lh-40px overflow-hidden">
             <div className="m-auto  w-1200px">
               <Menu
                 className="ml-250px bg-#C20C0C"
                 mode="horizontal"
-                items={options[1].items}
-                defaultSelectedKeys={[options[1].active_key]}
+                items={current_item?.children}
+                selectedKeys={secondActive}
                 onSelect={handleSelect2}
               />
             </div>
