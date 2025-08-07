@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function djradio() {
+export default function Djradio() {
   return (
     <div>
       djradio

@@ -3,7 +3,7 @@ const { Footer: AtnFooter } = Layout;
 const footerStyle: React.CSSProperties = {
   textAlign: "center",
   color: "#fff",
-  backgroundColor: "#4096ff",
+  backgroundColor: "gray",
 };
 export default function Footer() {
   return <AtnFooter style={footerStyle}>
