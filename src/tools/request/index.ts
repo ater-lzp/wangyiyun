@@ -27,18 +27,19 @@ instance.interceptors.response.use(
   function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
-    return Promise.reject(error);
+    return Promise.reject(error.data);
   }
 );
-
-export const request = (config: AxiosRequestConfig) => {
+export const request = <T = unknown>(
+  config: AxiosRequestConfig
+): Promise<T> => {
   return new Promise((resolve, reject) => {
     instance(config)
       .then((res) => {
-        resolve(res);
+        resolve(res as T);
       })
       .catch((err) => {
-        reject(err);
+        reject(err as T);
       });
   });
 };

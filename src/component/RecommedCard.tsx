@@ -1,21 +1,28 @@
 import React from "react";
 
-type Title = { title: string; url: string; color: string; size: string };
+type Title = {
+  title: string;
+  url: string;
+  color: string;
+  size: string;
+  [key: string]: any;
+};
 type Titles = {
   title: string;
   url: string;
   color: string;
   size: string;
+  [key: string]: any;
   items?: Title[];
 };
 export default function RecommedCard({
   title,
   children,
-  className
+  className,
 }: {
   title: Titles;
   children?: React.ReactNode;
-  className?:string
+  className?: string;
 }) {
   return (
     <div className={className}>
