@@ -1,7 +1,7 @@
       import { useRef, useImperativeHandle, forwardRef } from "react";
       import { Carousel } from "antd";
       import type { CarouselRef } from "antd/es/carousel"; // 引入 CarouselRef 类型
-      import type { Banner } from "../ts/Type/component/Swiper";
+      import type { Banner } from "@/ts/type";
       
 export interface SwiperRef {
   prev: () => void;

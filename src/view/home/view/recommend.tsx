@@ -1,19 +1,21 @@
 import { useLayoutEffect, useState, useRef } from "react";
-import Swiper from "../../../component/Swiper";
-import type { SwiperRef } from "../../../component/Swiper";
+import Swiper from "@/component/Swiper";
+import type { SwiperRef } from "@/component/Swiper";
 import {
   get_banners,
   get_hot_playlist_categories,
   get_recommend_playlist,
-} from "../../../ts/api/home/recommend/index";
-import type { Banner } from "../../../ts/Type/component/Swiper";
+  get_new_album
+} from "@/ts/api";
+import type { Banner, Album } from "@/ts/type";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import RecommedCard from "../../../component/RecommedCard";
-import List from "../../../component/List";
+import RecommedCard from "@/component/RecommedCard";
+import List from "@/component/List";
 import { Carousel } from "antd";
 
 const new_album = { title: "新碟上架", url: "", color: "black", size: "20px" };
 const toplist = { title: "榜单", url: "", color: "black", size: "20px" };
+const recommend = { title: "个性化推荐", url: "", color: "black", size: "20px" }
 export default function Recommend() {
   // 轮播图
   const [banners, set_banners] = useState<Banner[]>([]);
@@ -21,14 +23,18 @@ export default function Recommend() {
     []
   );
   const [playlist, set_playlist] = useState<any[]>([]);
+  const [albums, set_albums] = useState<Album[]>([]);
   useLayoutEffect(() => {
-    Promise.all([getBanners(), getHotPlaylistCategories(), getPlaylist()]);
+    getNewAlbum()
+    getBanners()
+    getHotPlaylistCategories()
+    getPlaylist()
   }, []);
 
   // 获取轮播图数据
-  const getBanners = async (type:   0|1|2|3=0) => {
+  const getBanners = async (type: 0 | 1 | 2 | 3 = 0) => {
     try {
-      const res = await get_banners(type);      
+      const res = await get_banners(type);
       set_banners(res.banners);
     } catch (error) {
       console.log(error);
@@ -38,7 +44,7 @@ export default function Recommend() {
   const getHotPlaylistCategories = async () => {
     try {
       const res = await get_hot_playlist_categories();
-      const items = res.tags?.map((item: any) => ({
+      const items = res.tags.map((item: any) => ({
         title: item.name,
         ...item,
         size: "15px",
@@ -59,12 +65,28 @@ export default function Recommend() {
   // 获取歌单列表
   const getPlaylist = async () => {
     try {
-      const res = await get_recommend_playlist(8 );      
+      const res = await get_recommend_playlist(8);
       set_playlist(res.result);
     } catch (error) {
       console.log(error);
     }
   };
+
+  /**
+   * 获取新碟上架数据
+   * @param {number|string} items - 可选参数，默认为5。设置每一行显示多少个新碟
+   * @returns {Promise<void>}
+   * @description 返回二维数组
+   */
+  const getNewAlbum = async (items:number|string=5) => {
+    try {
+      const res = await get_new_album();
+      set_albums(res.albums);
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
   const swiper_ref = useRef<SwiperRef>(null);
   return (
     <>
@@ -112,6 +134,8 @@ export default function Recommend() {
                   ))}
                 </List>
               </RecommedCard>
+              {/* 个性化推荐 */}
+              {false && <RecommedCard className="mb-20px" title={recommend} />}
               {/* 新碟上架 */}
               <RecommedCard className="mb-20px" title={new_album}>
                 <div className="h-190px m-20px flex justify-center items-center bg-#f5f5f5 border-solid border-gray border-1px">
@@ -121,7 +145,14 @@ export default function Recommend() {
                     draggable={true}
                     dots={false}
                   >
-                    <List row={1} col={5} className=" w-100% h-150px"></List>
+                    {
+                      albums?.map((x: Album) =>
+                        (<List row={1} col={5} className=" w-100% h-150px ">
+
+                        </List>)
+                      )
+                    }
+
                   </Carousel>
                   <RightOutlined />
                 </div>
